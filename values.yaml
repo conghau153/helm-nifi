@@ -6,8 +6,8 @@ replicaCount: 3
 ## ref: https://hub.docker.com/r/apache/nifi/
 ##
 image:
-  repository: apache/nifi
-  tag: "1.13.2"
+  repository: nathluu/nifi
+  tag: "1.14.0"
   pullPolicy: IfNotPresent
 
   ## Optionally specify an imagePullSecret.
@@ -315,6 +315,11 @@ zookeeper:
   url: ""
   port: 2181
   replicaCount: 3
+  image:
+    registry: docker.io
+    repository: bitnami/zookeeper
+    tag: "3.7.0"
+    pullPolicy: IfNotPresent
 
 # ------------------------------------------------------------------------------
 # Nifi registry:
@@ -326,6 +331,10 @@ registry:
   port: 80
   ## Add values for the nifi-registry here
   ## ref: https://github.com/dysnix/charts/blob/master/nifi-registry/values.yaml
+  image:
+    repository: docker.io/apache/nifi-registry
+    tag: "0.8.0"
+    pullPolicy: IfNotPresent
 
 # Configure metrics
 metrics:
