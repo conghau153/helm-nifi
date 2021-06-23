@@ -7,7 +7,7 @@ replicaCount: 3
 ##
 image:
   repository: nathluu/nifi
-  tag: "1.14.0"
+  tag: "1.14.0-SNAPSHOT"
   pullPolicy: IfNotPresent
 
   ## Optionally specify an imagePullSecret.
