@@ -7,6 +7,7 @@ replicaCount: 3
 ##
 image:
   repository: nathluu/nifi
+  # repository: tconghau1/nifi
   tag: "1.14.0-SNAPSHOT"
   pullPolicy: IfNotPresent
 
@@ -64,12 +65,13 @@ sts:
 properties:
   # use externalSecure for when inbound SSL is provided by nginx-ingress or other external mechanism
   externalSecure: false
-  isNode: true # set to false if ldap is enabled
-  httpPort: 8080 # set to null if ldap is enabled
-  httpsPort: null # set to 9443 if ldap is enabled
+  isNode: false # set to false if ldap is enabled
+  httpPort: null # set to null if ldap is enabled
+  httpsPort: 9443 # set to 9443 if ldap is enabled
   webProxyHost:
+  webHttpsHost: 
   clusterPort: 6007
-  clusterSecure: false # set to true if ldap is enabled
+  clusterSecure: true # set to true if ldap is enabled
   needClientAuth: false
   provenanceStorage: "8 GB"
   siteToSite:
@@ -108,11 +110,28 @@ auth:
     authExpiration: 12 hours
 
   oidc:
-    enabled: false
-    discoveryUrl:
-    clientId:
-    clientSecret:
-    claimIdentifyingUser: email
+    enabled: true
+    # discoveryUrl: https://login.microsoftonline.com/94340815-a3fb-4e7c-aab0-bf60c41eea7e/v2.0/.well-known/openid-configuration
+    # clientId: f4568756-5d68-433c-b75a-d8d7ef73b800
+    # clientSecret: -I24K-V3g6Kx__2XZ6AzPlbmc3rssI_JHz
+    # tenantId: 94340815-a3fb-4e7c-aab0-bf60c41eea7e
+    # admin: tconghau@tanluu298outlook.onmicrosoft.com
+    # claimIdentifyingUser: upn
+
+    # discoveryUrl: https://login.microsoftonline.com/82e3b336-c81d-4a9d-92e9-ff1a8260cf8f/v2.0/.well-known/openid-configuration
+    # clientId: b993fd39-6b41-4144-9673-5ec4b64a5a9e
+    # clientSecret: 3FiD_V-1Td_J7oHFMGCi-3~i1FMeVeEa41
+    # tenantId: 82e3b336-c81d-4a9d-92e9-ff1a8260cf8f
+    # admin: conghau153_gmail.com#EXT#@conghau153gmail.onmicrosoft.com
+    # claimIdentifyingUser: upn
+
+    discoveryUrl: https://login.microsoftonline.com/82e3b336-c81d-4a9d-92e9-ff1a8260cf8f/v2.0/.well-known/openid-configuration
+    clientId: e6f426bb-01bd-4a43-95ce-64c2c6526558
+    clientSecret: VV7kk~cGyQ5Cletu5.NLTwpJc5rmnd-8f-
+    tenantId: 82e3b336-c81d-4a9d-92e9-ff1a8260cf8f
+    admin: 
+    claimIdentifyingUser: upn
+
     ## Request additional scopes, for example profile
     additionalScopes:
 
@@ -132,7 +151,8 @@ service:
   type: ClusterIP
   httpPort: 8080
   httpsPort: 9443
-  nodePort: 30236
+  # nodePort: 30236
+  nodePort: 
   annotations: {}
     # loadBalancerIP:
     ## Load Balancer sources
