@@ -1,13 +1,13 @@
 ---
 # Number of nifi nodes
-replicaCount: 3
+replicaCount: 1
 
 ## Set default image, imageTag, and imagePullPolicy.
 ## ref: https://hub.docker.com/r/apache/nifi/
 ##
 image:
-  repository: nathluu/nifi
-  # repository: tconghau1/nifi
+  # repository: nathluu/nifi
+  repository: tconghau1/nifi
   tag: "1.14.0-SNAPSHOT"
   pullPolicy: IfNotPresent
 
@@ -65,14 +65,14 @@ sts:
 properties:
   # use externalSecure for when inbound SSL is provided by nginx-ingress or other external mechanism
   externalSecure: false
-  isNode: false # set to false if ldap is enabled
+  isNode: true # set to false if ldap is enabled
   httpPort: null # set to null if ldap is enabled
   httpsPort: 9443 # set to 9443 if ldap is enabled
-  webProxyHost:
-  webHttpsHost: 
+  webProxyHost: nifi-eventproc.abcd.com:443
+  webHttpsHost: nifi-eventproc.abcd.com
   clusterPort: 6007
   clusterSecure: true # set to true if ldap is enabled
-  needClientAuth: false
+  needClientAuth: true
   provenanceStorage: "8 GB"
   siteToSite:
     port: 10000
@@ -95,8 +95,8 @@ properties:
 auth:
   admin: CN=admin, OU=NIFI
   SSL:
-    keystorePasswd: env:PASS
-    truststorePasswd: env:PASS
+    keystorePasswd: f8egshNaWf/jp+6zIuh2IHpg4TblbnfUwQiB5TAUeQ0
+    truststorePasswd: 4TOX5d0ElQUjrvrSfjY28PxPc+gw8gdlzoubgCvmY/E
   ldap:
     enabled: false
     host: ldap://<hostname>:<port>
@@ -129,7 +129,7 @@ auth:
     clientId: e6f426bb-01bd-4a43-95ce-64c2c6526558
     clientSecret: VV7kk~cGyQ5Cletu5.NLTwpJc5rmnd-8f-
     tenantId: 82e3b336-c81d-4a9d-92e9-ff1a8260cf8f
-    admin: 
+    admin: tconghau1@conghau153gmail.onmicrosoft.com
     claimIdentifyingUser: upn
 
     ## Request additional scopes, for example profile
@@ -334,7 +334,7 @@ zookeeper:
   ## If the Zookeeper Chart is disabled a URL and port are required to connect
   url: ""
   port: 2181
-  replicaCount: 3
+  replicaCount: 1
   image:
     registry: docker.io
     repository: bitnami/zookeeper

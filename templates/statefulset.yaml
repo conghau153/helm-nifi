@@ -122,8 +122,8 @@ spec:
             -p {{ .Values.ca.service.port }}
 
           # Generate client certificate for browser with webProxyHost or service name as alternate names to access nifi web ui
-          mkdir -p /data/./conf/admin
-          cd /data/./conf/admin
+          mkdir -p /data/config-data/certs/admin
+          cd /data/config-data/certs/admin
 
           ${NIFI_TOOLKIT_HOME}/bin/tls-toolkit.sh client \
             -c "{{ template "ca.server" . }}" \
@@ -175,7 +175,7 @@ spec:
             fi
           }
 
-          mkdir -p ${NIFI_HOME}/./conf
+          mkdir -p ${NIFI_HOME}/config-data/conf
           FQDN=$(hostname -f)
 
           cat "${NIFI_HOME}/conf/nifi.temp" > "${NIFI_HOME}/conf/nifi.properties"
@@ -199,12 +199,12 @@ spec:
           # Update nifi.properties for security properties
           prop_replace nifi.web.https.host ${FQDN}
           prop_replace nifi.security.keystoreType jks
-          prop_replace nifi.security.keystore   ${NIFI_HOME}/./conf/keystore.jks
-          prop_replace nifi.security.keystorePasswd     $(jq -r .keyStorePassword ${NIFI_HOME}/./conf/config.json)
-          prop_replace nifi.security.keyPasswd          $(jq -r .keyPassword ${NIFI_HOME}/./conf/config.json)
+          prop_replace nifi.security.keystore   /opt/nifi/nifi-current/./cert/keystore.jks
+          prop_replace nifi.security.keystorePasswd     {{.Values.auth.SSL.keystorePasswd}}
+          prop_replace nifi.security.keyPasswd          {{.Values.auth.SSL.keystorePasswd}}
           prop_replace nifi.security.truststoreType jks
-          prop_replace nifi.security.truststore   ${NIFI_HOME}/./conf/truststore.jks
-          prop_replace nifi.security.truststorePasswd   $(jq -r .trustStorePassword ${NIFI_HOME}/./conf/config.json)
+          prop_replace nifi.security.truststore   /opt/nifi/nifi-current/./cert/truststore.jks
+          prop_replace nifi.security.truststorePasswd   {{.Values.auth.SSL.truststorePasswd}}
 
 {{- if .Values.properties.webProxyHost }}
           # Update nifi.properties for web ui proxy hostname
@@ -232,11 +232,11 @@ spec:
               {{- if .Values.properties.clusterSecure }}
               baseUrl=https://${FQDN}:{{ .Values.properties.httpsPort }}
 
-              keystore=${NIFI_HOME}/./conf/keystore.jks
-              keystorePasswd=$(jq -r .keyStorePassword ${NIFI_HOME}/./conf/config.json)
-              keyPasswd=$(jq -r .keyPassword ${NIFI_HOME}/./conf/config.json)
-              truststore=${NIFI_HOME}/./conf/truststore.jks
-              truststorePasswd=$(jq -r .trustStorePassword ${NIFI_HOME}/./conf/config.json)
+              keystore=${NIFI_HOME}/./cert/keystore.jks
+              keystorePasswd={{.Values.auth.SSL.keystorePasswd}}
+              keyPasswd={{.Values.auth.SSL.keystorePasswd}}
+              truststore=${NIFI_HOME}/./cert/truststore.jks
+              truststorePasswd={{.Values.auth.SSL.truststorePasswd}}
 
               secureArgs=" --truststore ${truststore} --truststoreType JKS --truststorePasswd ${truststorePasswd} --keystore ${keystore} --keystoreType JKS --keystorePasswd ${keystorePasswd} --proxiedEntity "{{ .Values.auth.admin }}""
               {{- else }}
