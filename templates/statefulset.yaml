@@ -190,6 +190,12 @@ spec:
             gzip /opt/nifi/data/flow.xml
           fi
 
+          mkdir -p ${NIFI_HOME}/cert
+
+          base64 -d -i /opt/nifi/nifi-current/secrets-store/nifieventproc${FQDN:15:1} > /opt/nifi/nifi-current/cert/testkeystore.pfx
+          keytool -importkeystore -srckeystore ${NIFI_HOME}/cert/testkeystore.pfx -srcstoretype pkcs12 -srcstorepass $(<secrets-store/nifieventproc${FQDN:15:1}pass)  -destkeystore ${NIFI_HOME}/cert/keystore.jks -deststoretype jks -storepass {{.Values.auth.SSL.keystorePasswd}} -destkeypass {{.Values.auth.SSL.keystorePasswd}}
+
+        
           prop_replace nifi.remote.input.host ${FQDN}
           prop_replace nifi.cluster.node.address ${FQDN}
           prop_replace nifi.zookeeper.connect.string ${NIFI_ZOOKEEPER_CONNECT_STRING}
@@ -199,11 +205,11 @@ spec:
           # Update nifi.properties for security properties
           prop_replace nifi.web.https.host ${FQDN}
           prop_replace nifi.security.keystoreType jks
-          prop_replace nifi.security.keystore   /opt/nifi/nifi-current/./cert/keystore.jks
+          prop_replace nifi.security.keystore   /opt/nifi/nifi-current/cert/keystore.jks
           prop_replace nifi.security.keystorePasswd     {{.Values.auth.SSL.keystorePasswd}}
           prop_replace nifi.security.keyPasswd          {{.Values.auth.SSL.keystorePasswd}}
           prop_replace nifi.security.truststoreType jks
-          prop_replace nifi.security.truststore   /opt/nifi/nifi-current/./cert/truststore.jks
+          prop_replace nifi.security.truststore   /opt/nifi/nifi-current/cert/truststore.jks
           prop_replace nifi.security.truststorePasswd   {{.Values.auth.SSL.truststorePasswd}}
 
 {{- if .Values.properties.webProxyHost }}
@@ -232,10 +238,10 @@ spec:
               {{- if .Values.properties.clusterSecure }}
               baseUrl=https://${FQDN}:{{ .Values.properties.httpsPort }}
 
-              keystore=${NIFI_HOME}/./cert/keystore.jks
+              keystore=${NIFI_HOME}/cert/keystore.jks
               keystorePasswd={{.Values.auth.SSL.keystorePasswd}}
               keyPasswd={{.Values.auth.SSL.keystorePasswd}}
-              truststore=${NIFI_HOME}/./cert/truststore.jks
+              truststore=${NIFI_HOME}/cert/truststore.jks
               truststorePasswd={{.Values.auth.SSL.truststorePasswd}}
 
               secureArgs=" --truststore ${truststore} --truststoreType JKS --truststorePasswd ${truststorePasswd} --keystore ${keystore} --keystoreType JKS --keystorePasswd ${keystorePasswd} --proxiedEntity "{{ .Values.auth.admin }}""
@@ -367,6 +373,8 @@ spec:
             port: {{ .Values.properties.httpPort }}
 {{- end }}
         volumeMounts:
+          - name: secrets-store-inline
+            mountPath: "/opt/nifi/nifi-current/secrets-store"
           - name: "data"
             mountPath: /opt/nifi/data
           - name: "auth-conf"
@@ -470,6 +478,12 @@ spec:
         - name: logs
           mountPath: /var/log
       volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "azure-kvname1"
       - name: "bootstrap-conf"
         configMap:
           name: {{ template "apache-nifi.fullname" . }}-config

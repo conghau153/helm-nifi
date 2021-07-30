@@ -1,6 +1,6 @@
 ---
 # Number of nifi nodes
-replicaCount: 1
+replicaCount: 2
 
 ## Set default image, imageTag, and imagePullPolicy.
 ## ref: https://hub.docker.com/r/apache/nifi/
@@ -8,7 +8,11 @@ replicaCount: 1
 image:
   # repository: nathluu/nifi
   repository: tconghau1/nifi
-  tag: "1.14.0-SNAPSHOT"
+  # tag: "1.14.0-SNAPSHOT"
+  # repository: apache/nifi
+  # tag: "1.14.0"
+  tag: "test"
+
   pullPolicy: IfNotPresent
 
   ## Optionally specify an imagePullSecret.
@@ -95,8 +99,11 @@ properties:
 auth:
   admin: CN=admin, OU=NIFI
   SSL:
-    keystorePasswd: f8egshNaWf/jp+6zIuh2IHpg4TblbnfUwQiB5TAUeQ0
-    truststorePasswd: 4TOX5d0ElQUjrvrSfjY28PxPc+gw8gdlzoubgCvmY/E
+    keystorePasswd: tkazcbk+WjJCQlrVxgN232JCxNfibrUNTwiwd6Aqwm0
+    # truststorePasswd: 8qeFNr/3UosjPobCgC7KrvVSaqLVGOq3BHhigWfkiZw
+    truststorePasswd: DoGLqVkjyJ7fQfWniMiisc1LN7us49sh8PklTULV04Y
+    # truststorePasswd: DoGLqVkjyJ7fQfWniMiisc1LN7us49sh8PklTULV04Y
+
   ldap:
     enabled: false
     host: ldap://<hostname>:<port>
@@ -129,7 +136,7 @@ auth:
     clientId: e6f426bb-01bd-4a43-95ce-64c2c6526558
     clientSecret: VV7kk~cGyQ5Cletu5.NLTwpJc5rmnd-8f-
     tenantId: 82e3b336-c81d-4a9d-92e9-ff1a8260cf8f
-    admin: tconghau1@conghau153gmail.onmicrosoft.com
+    admin: tchau@conghau153gmail.onmicrosoft.com
     claimIdentifyingUser: upn
 
     ## Request additional scopes, for example profile
@@ -161,10 +168,10 @@ service:
     # loadBalancerSourceRanges:
     # - 10.10.10.0/24
     ## OIDC authentication requires "sticky" session on the LoadBalancer for JWT to work properly...but AWS doesn't like it on creation
-    # sessionAffinity: ClientIP
-    # sessionAffinityConfig:
-    #   clientIP:
-  #     timeoutSeconds: 10800
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 
   # Enables additional port/ports to nifi service for internal processors
   processors:
@@ -334,7 +341,7 @@ zookeeper:
   ## If the Zookeeper Chart is disabled a URL and port are required to connect
   url: ""
   port: 2181
-  replicaCount: 1
+  replicaCount: 2
   image:
     registry: docker.io
     repository: bitnami/zookeeper
