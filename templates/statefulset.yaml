@@ -191,9 +191,13 @@ spec:
           fi
 
           mkdir -p ${NIFI_HOME}/cert
+          keystorefile=$(hostname -s)
 
-          base64 -d -i /opt/nifi/nifi-current/secrets-store/nifieventproc${FQDN:15:1} > /opt/nifi/nifi-current/cert/testkeystore.pfx
-          keytool -importkeystore -srckeystore ${NIFI_HOME}/cert/testkeystore.pfx -srcstoretype pkcs12 -srcstorepass $(<secrets-store/nifieventproc${FQDN:15:1}pass)  -destkeystore ${NIFI_HOME}/cert/keystore.jks -deststoretype jks -storepass {{.Values.auth.SSL.keystorePasswd}} -destkeypass {{.Values.auth.SSL.keystorePasswd}}
+          base64 -d -i /opt/nifi/nifi-current/secrets-store/keystorefile > /opt/nifi/nifi-current/cert/testkeystore.pfx
+          keytool -importkeystore -srckeystore ${NIFI_HOME}/cert/testkeystore.pfx -srcstoretype pkcs12 -srcstorepass $(<secrets-store/nifi-keystore-password)  -destkeystore ${NIFI_HOME}/cert/keystore.jks -deststoretype jks -storepass {{.Values.auth.SSL.keystorePasswd}} -destkeypass {{.Values.auth.SSL.keystorePasswd}}
+
+          base64 -d -i /opt/nifi/nifi-current/secrets-store/nifi-truststore > /opt/nifi/nifi-current/cert/truststore.pfx
+          keytool -importkeystore -srckeystore ${NIFI_HOME}/cert/truststore.pfx -srcstoretype pkcs12 -srcstorepass $(<secrets-store/nifi-truststore-password)  -destkeystore ${NIFI_HOME}/cert/truststore.jks -deststoretype jks -storepass {{.Values.auth.SSL.truststorePasswd}} 
 
         
           prop_replace nifi.remote.input.host ${FQDN}

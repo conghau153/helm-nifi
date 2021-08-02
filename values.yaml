@@ -7,11 +7,11 @@ replicaCount: 2
 ##
 image:
   # repository: nathluu/nifi
-  repository: tconghau1/nifi
+  # repository: tconghau1/nifi
   # tag: "1.14.0-SNAPSHOT"
-  # repository: apache/nifi
-  # tag: "1.14.0"
-  tag: "test"
+  repository: apache/nifi
+  tag: "1.14.0"
+  # tag: "test"
 
   pullPolicy: IfNotPresent
 
