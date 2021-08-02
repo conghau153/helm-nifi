@@ -240,7 +240,7 @@ spec:
 
               keystore=${NIFI_HOME}/config-data/certs/keystore.pfx
               keystorePasswd=$(<secrets-store/nifi-keystore-password)
-              keyPasswd=
+              keyPasswd=""
               truststore=${NIFI_HOME}/config-data/certs/truststore.pfx
               truststorePasswd=$(<secrets-store/nifi-truststore-password)
 
