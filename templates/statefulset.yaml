@@ -190,10 +190,9 @@ spec:
             gzip /opt/nifi/data/flow.xml
           fi
 
-          mkdir -p ${NIFI_HOME}/cert
-          keystorefile=$(hostname -s)
+          mkdir -p ${NIFI_HOME}/config-data/certs
 
-          base64 -d -i /opt/nifi/nifi-current/secrets-store/keystorefile > ${NIFI_HOME}/config-data/certs/keystore.pfx
+          base64 -d -i /opt/nifi/nifi-current/secrets-store/$(hostname -s) > ${NIFI_HOME}/config-data/certs/keystore.pfx
          
           base64 -d -i /opt/nifi/nifi-current/secrets-store/nifi-truststore > ${NIFI_HOME}/config-data/certs/truststore.pfx
         
