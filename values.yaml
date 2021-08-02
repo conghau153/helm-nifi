@@ -1,6 +1,6 @@
 ---
 # Number of nifi nodes
-replicaCount: 2
+replicaCount: 3
 
 ## Set default image, imageTag, and imagePullPolicy.
 ## ref: https://hub.docker.com/r/apache/nifi/
@@ -99,11 +99,8 @@ properties:
 auth:
   admin: CN=admin, OU=NIFI
   SSL:
-    keystorePasswd: tkazcbk+WjJCQlrVxgN232JCxNfibrUNTwiwd6Aqwm0
-    # truststorePasswd: 8qeFNr/3UosjPobCgC7KrvVSaqLVGOq3BHhigWfkiZw
-    truststorePasswd: DoGLqVkjyJ7fQfWniMiisc1LN7us49sh8PklTULV04Y
-    # truststorePasswd: DoGLqVkjyJ7fQfWniMiisc1LN7us49sh8PklTULV04Y
-
+    keystorePasswd: env:PASS
+    truststorePasswd: env:PASS
   ldap:
     enabled: false
     host: ldap://<hostname>:<port>
@@ -168,10 +165,10 @@ service:
     # loadBalancerSourceRanges:
     # - 10.10.10.0/24
     ## OIDC authentication requires "sticky" session on the LoadBalancer for JWT to work properly...but AWS doesn't like it on creation
-  sessionAffinity: ClientIP
-  sessionAffinityConfig:
-    clientIP:
-      timeoutSeconds: 10800
+    # sessionAffinity: ClientIP
+    # sessionAffinityConfig:
+    #   clientIP:
+  #     timeoutSeconds: 10800
 
   # Enables additional port/ports to nifi service for internal processors
   processors:
@@ -341,7 +338,7 @@ zookeeper:
   ## If the Zookeeper Chart is disabled a URL and port are required to connect
   url: ""
   port: 2181
-  replicaCount: 2
+  replicaCount: 3
   image:
     registry: docker.io
     repository: bitnami/zookeeper

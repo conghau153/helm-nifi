@@ -193,12 +193,9 @@ spec:
           mkdir -p ${NIFI_HOME}/cert
           keystorefile=$(hostname -s)
 
-          base64 -d -i /opt/nifi/nifi-current/secrets-store/keystorefile > /opt/nifi/nifi-current/cert/testkeystore.pfx
-          keytool -importkeystore -srckeystore ${NIFI_HOME}/cert/testkeystore.pfx -srcstoretype pkcs12 -srcstorepass $(<secrets-store/nifi-keystore-password)  -destkeystore ${NIFI_HOME}/cert/keystore.jks -deststoretype jks -storepass {{.Values.auth.SSL.keystorePasswd}} -destkeypass {{.Values.auth.SSL.keystorePasswd}}
-
-          base64 -d -i /opt/nifi/nifi-current/secrets-store/nifi-truststore > /opt/nifi/nifi-current/cert/truststore.pfx
-          keytool -importkeystore -srckeystore ${NIFI_HOME}/cert/truststore.pfx -srcstoretype pkcs12 -srcstorepass $(<secrets-store/nifi-truststore-password)  -destkeystore ${NIFI_HOME}/cert/truststore.jks -deststoretype jks -storepass {{.Values.auth.SSL.truststorePasswd}} 
-
+          base64 -d -i /opt/nifi/nifi-current/secrets-store/keystorefile > ${NIFI_HOME}/config-data/certs/keystore.pfx
+         
+          base64 -d -i /opt/nifi/nifi-current/secrets-store/nifi-truststore > ${NIFI_HOME}/config-data/certs/truststore.pfx
         
           prop_replace nifi.remote.input.host ${FQDN}
           prop_replace nifi.cluster.node.address ${FQDN}
@@ -208,13 +205,12 @@ spec:
 {{- if .Values.properties.clusterSecure }}
           # Update nifi.properties for security properties
           prop_replace nifi.web.https.host ${FQDN}
-          prop_replace nifi.security.keystoreType jks
-          prop_replace nifi.security.keystore   /opt/nifi/nifi-current/cert/keystore.jks
-          prop_replace nifi.security.keystorePasswd     {{.Values.auth.SSL.keystorePasswd}}
-          prop_replace nifi.security.keyPasswd          {{.Values.auth.SSL.keystorePasswd}}
-          prop_replace nifi.security.truststoreType jks
-          prop_replace nifi.security.truststore   /opt/nifi/nifi-current/cert/truststore.jks
-          prop_replace nifi.security.truststorePasswd   {{.Values.auth.SSL.truststorePasswd}}
+          prop_replace nifi.security.keystoreType PKCS12
+          prop_replace nifi.security.keystore   ${NIFI_HOME}/config-data/certs/keystore.pfx
+          prop_replace nifi.security.keystorePasswd     $(<secrets-store/nifi-keystore-password)
+          prop_replace nifi.security.truststoreType PKCS12
+          prop_replace nifi.security.truststore  ${NIFI_HOME}/config-data/certs/truststore.pfx
+          prop_replace nifi.security.truststorePasswd   $(<secrets-store/nifi-truststore-password)
 
 {{- if .Values.properties.webProxyHost }}
           # Update nifi.properties for web ui proxy hostname
@@ -242,13 +238,13 @@ spec:
               {{- if .Values.properties.clusterSecure }}
               baseUrl=https://${FQDN}:{{ .Values.properties.httpsPort }}
 
-              keystore=${NIFI_HOME}/cert/keystore.jks
-              keystorePasswd={{.Values.auth.SSL.keystorePasswd}}
-              keyPasswd={{.Values.auth.SSL.keystorePasswd}}
-              truststore=${NIFI_HOME}/cert/truststore.jks
-              truststorePasswd={{.Values.auth.SSL.truststorePasswd}}
+              keystore=${NIFI_HOME}/config-data/certs/keystore.pfx
+              keystorePasswd=$(<secrets-store/nifi-keystore-password)
+              keyPasswd=
+              truststore=${NIFI_HOME}/config-data/certs/truststore.pfx
+              truststorePasswd=$(<secrets-store/nifi-truststore-password)
 
-              secureArgs=" --truststore ${truststore} --truststoreType JKS --truststorePasswd ${truststorePasswd} --keystore ${keystore} --keystoreType JKS --keystorePasswd ${keystorePasswd} --proxiedEntity "{{ .Values.auth.admin }}""
+              secureArgs=" --truststore ${truststore} --truststoreType PKCS12 --truststorePasswd ${truststorePasswd} --keystore ${keystore} --keystoreType PKCS12 --keystorePasswd ${keystorePasswd} --proxiedEntity "{{ .Values.auth.admin }}""
               {{- else }}
               baseUrl=http://${FQDN}:{{ .Values.properties.httpPort }}
               {{- end }}
