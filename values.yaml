@@ -43,7 +43,7 @@ sts:
   pod:
     annotations:
       security.alpha.kubernetes.io/sysctls: net.ipv4.ip_local_port_range=10000 65000
-      #prometheus.io/scrape: "true"      
+      prometheus.io/scrape: "true"      
   serviceAccount:
     create: false
     #name: nifi
@@ -364,11 +364,11 @@ registry:
 metrics:
   prometheus:
     # Enable Prometheus metrics
-    enabled: false
+    enabled: true
     # Port used to expose Prometheus metrics
     port: 9092
     serviceMonitor:
       # Enable deployment of Prometheus Operator ServiceMonitor resource
-      enabled: false
+      enabled: true
       # Additional labels for the ServiceMonitor
       labels: {}
